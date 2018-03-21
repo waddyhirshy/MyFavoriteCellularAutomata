@@ -3,9 +3,9 @@
  * My Favorite Cellular Automata
  *
  * @template Andrew Smith
- * @student ____(your name)____
+ * @student ____Wade Hirschbuhl____
  */
-
+CellularAutomaton CellularAutomaton[];
 import processing.svg.*;
 CellularAutomaton c;
 int requestedCellsPerGeneration;
@@ -14,12 +14,12 @@ float drawScaleFactor;
 
 void setup() {
   size(600, 450);
-  frameRate(60);
-  background(255);
+  frameRate(2);
+  background(000);
   ellipseMode(CORNER);
-  requestedCellsPerGeneration = 300;
-  requestedRuleNumber = 12;
-  drawScaleFactor = 0.9;
+  requestedCellsPerGeneration = 30;
+  requestedRuleNumber = 69;
+  drawScaleFactor = .5;
   c = new CellularAutomaton(requestedCellsPerGeneration, requestedRuleNumber);
 }
 
@@ -27,6 +27,7 @@ void draw() {
   if (c.canGrow()) {
     c.show();
     c.evolve();
+    System.out.println(c.getRulePatternAsString());
   } else {
     //c.showLabel();  // TODO: uncomment this line after the rest of your code is done
     noLoop();
@@ -51,7 +52,15 @@ class CellularAutomaton {
    *  Precondition: none
    */
   public CellularAutomaton(int n, int r) {
-    // TODO: implement this constructor
+  cellArray = new String[n];
+     for (int i=0; i<cellArray.length; i++){
+       cellArray[i]="0";
+     }
+     cellArray[n/2]="1";
+     currentGenerationNumber=0;
+     canGrow=true;
+     ruleNumber=r;
+     
   }
 
   public void updateCurrentGenerationNumber() {
@@ -76,7 +85,16 @@ class CellularAutomaton {
    *  Precondition: none
    */
   public void setRuleNumber(int n) {
-    // TODO: implement this method
+    if(n>255){
+      ruleNumber=0;
+    }
+    
+    else if(n<0){
+      ruleNumber=n;
+    }
+    else{
+    ruleNumber=0;
+  }
   }
 
   public int getRuleNumber() {
@@ -92,8 +110,10 @@ class CellularAutomaton {
    */
   public String getRulePatternAsString() {
     String output = Integer.toBinaryString(getRuleNumber());
-    // TODO: finish implementing this method
-    return "";
+    while(output.length() < 8) {  
+      output = "0" + output;
+    }
+    return output;
   }
 
   /**
@@ -105,7 +125,10 @@ class CellularAutomaton {
    */
   public String[] getRulePatternAsArray() {
     String[] output = new String[8];
-    // TODO: finish implementing this method
+   String s = getRulePatternAsString();
+   for(int i = 0; i < s.length(); i++){
+     output[i] = s.substring(i, i+1);
+    }
     return output;
   }
 
@@ -129,9 +152,11 @@ class CellularAutomaton {
   private void updateCellArray() {
     String[] newArray = new String[cellArray.length];
     for (int i = 1; i < newArray.length - 1; i++) {
-      newArray[i] = getNewCellState("000");   // TODO: replace "000" with something more appropriate
+      newArray[i] = getNewCellState(cellArray[i-1] +cellArray[i] + cellArray[i+1]);   // TODO: replace "000" with something more appropriate
     }
-    // TODO: finish implementing this method
+    newArray[0] = "0";
+    newArray[newArray.length - 1] = "0";
+    cellArray = newArray;
   }
 
   /**
@@ -144,10 +169,25 @@ class CellularAutomaton {
    */
   private String getNewCellState(String neighborhood) {
     String[] arr = getRulePatternAsArray();
-    if (neighborhood == "111") {      // TODO: fix this so it uses a correct String comparison method
+    if (neighborhood.equals("111")) {      // TODO: fix this so it uses a correct String comparison method
       return arr[0];
-    } else {
-      return "0";
+    } 
+     if (neighborhood.equals("110")) {      // TODO: fix this so it uses a correct String comparison method
+      return arr[1];
+    } if (neighborhood.equals("101")) {      // TODO: fix this so it uses a correct String comparison method
+      return arr[2];
+    } if (neighborhood.equals("100")) {      // TODO: fix this so it uses a correct String comparison method
+      return arr[3];
+    }  if (neighborhood.equals("011")) {      // TODO: fix this so it uses a correct String comparison method
+      return arr[4];
+    }
+    if (neighborhood.equals("010")) {      // TODO: fix this so it uses a correct String comparison method
+      return arr[5];
+    }
+     if (neighborhood.equals("001")) {      // TODO: fix this so it uses a correct String comparison method
+      return arr[6];
+    }else {
+      return arr[7];
     }
     // TODO: change this method so it handles all possible 3-digit neighborhoods
   }
@@ -162,7 +202,7 @@ class CellularAutomaton {
 
   public void show() {
     for (int i = 0; i < cellArray.length; i++) {
-      if (true) {  // TODO: replace true with a useful predicate
+      if (cellArray[i].equals("1")) {  // TODO: replace true with a useful predicate
         fill(#952424);
         noStroke();
         rect(i * getCellSize(), 30 + getCurrentGenerationNumber() * getCellSize(), getDrawSize(), getDrawSize());
